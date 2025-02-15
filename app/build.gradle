@@ -1,15 +1,25 @@
+import java.util.Properties
 plugins {
     id('com.google.gms.google-services')
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
-
 }
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if(localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream {stream ->
+        localProperties.load(stream)
+    }
+}
+
+
 
 android {
     namespace 'com.example.cyberinsecurity'
     compileSdk 34
+
 
     defaultConfig {
         applicationId "com.example.cyberinsecurity"
@@ -17,6 +27,7 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "API_KEY", "\"${localProperties['API_KEY'] ?: ''}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +47,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig = true
     }
 }
 
@@ -50,6 +62,7 @@ dependencies {
     implementation libs.androidx.ui.graphics
     implementation libs.androidx.ui.tooling.preview
     implementation libs.androidx.material3
+    implementation libs.support.annotations
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core

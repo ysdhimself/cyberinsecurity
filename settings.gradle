@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven { url 'https://jitpack.io' }  // Add this if the plugin is hosted on JitPack
     }
 }
 dependencyResolutionManagement {
