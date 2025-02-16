@@ -1,4 +1,5 @@
 import requests
+from config import API_KEY
 
 def get_forever21_products(user_query, detected_color=None, rows=3):
     """
@@ -11,7 +12,7 @@ def get_forever21_products(user_query, detected_color=None, rows=3):
     if detected_color:
         params["filterColor"] = detected_color.upper()  # API may expect uppercase
     headers = {
-        "x-rapidapi-key": "0fd8b684bamsh2955ee92027c93cp1217c7jsn924b1f14f146",
+        "x-rapidapi-key": API_KEY,
         "x-rapidapi-host": "apidojo-forever21-v1.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=params)

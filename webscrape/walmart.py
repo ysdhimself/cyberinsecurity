@@ -1,5 +1,6 @@
 import requests
 from urllib.parse import quote
+from config import API_KEY
 
 def get_walmart_products(user_query, limit=3):
     """
@@ -9,7 +10,7 @@ def get_walmart_products(user_query, limit=3):
     url = "https://walmart-data.p.rapidapi.com/walmart-serp.php"
     params = {"url": f"https://www.walmart.com/search?q={quote(user_query)}"}
     headers = {
-        "x-rapidapi-key": "0fd8b684bamsh2955ee92027c93cp1217c7jsn924b1f14f146",
+        "x-rapidapi-key": API_KEY,
         "x-rapidapi-host": "walmart-data.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=params)
