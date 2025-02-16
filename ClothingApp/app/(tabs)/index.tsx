@@ -1,74 +1,64 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { useState } from 'react';
+import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Searchbar, Button } from 'react-native-paper';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const clothingData = [
+  { id: '1', image: require('@/assets/images/item1.jpeg'), price: 49.99, rating: 4.5, store: 'Trendy Wear' },
+  { id: '2', image: require('@/assets/images/item2.png'), price: 79.99, rating: 4.8, store: 'Fashion Hub' },
+  { id: '3', image: require('@/assets/images/item3.jpeg'), price: 29.99, rating: 4.2, store: 'Budget Style' },
+];
 
-export default function HomeScreen() {
+export default function ClothingApp() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('relevance');
+
+  const handleSort = (option) => {
+    setSortOption(option);
+  };
+
+  const sortedData = [...clothingData].sort((a, b) => {
+    if (sortOption === 'price') return a.price - b.price;
+    if (sortOption === 'rating') return b.rating - a.rating;
+    return 0; // Default relevance sorting
+  });
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Clothing!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <Searchbar
+        placeholder="Search for clothing"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        style={styles.searchBar}
+      />
+      <View style={styles.filterContainer}>
+        <Button mode={sortOption === 'price' ? 'contained' : 'outlined'} onPress={() => handleSort('price')}>Price</Button>
+        <Button mode={sortOption === 'rating' ? 'contained' : 'outlined'} onPress={() => handleSort('rating')}>Rating</Button>
+        <Button mode={sortOption === 'relevance' ? 'contained' : 'outlined'} onPress={() => handleSort('relevance')}>Relevance</Button>
+      </View>
+      <FlatList
+        data={sortedData}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Image source={item.image} style={styles.image} />
+            <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+            <Text style={styles.store}>{item.store}</Text>
+            <Text style={styles.rating}>⭐ {item.rating}</Text>
+          </View>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  searchBar: { marginBottom: 16 },
+  filterContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
+  card: { flex: 1, margin: 8, padding: 10, backgroundColor: '#f9f9f9', borderRadius: 10, alignItems: 'center' },
+  image: { width: 150, height: 200, borderRadius: 8 },
+  price: { fontSize: 16, fontWeight: 'bold', marginTop: 8 },
+  store: { fontSize: 14, color: 'gray' },
+  rating: { fontSize: 14, marginTop: 4 },
 });
