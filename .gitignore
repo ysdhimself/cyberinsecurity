@@ -1,4 +1,3 @@
-
 *.iml
 .gradle
 /local.properties
@@ -14,4 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
-myapp/serviceAccountKey.json
+webscrape/congif.py
+serviceKey.json
