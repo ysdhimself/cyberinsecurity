@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
-import { ImageBackground, Text, View } from 'react-native'
-import TinderCard from 'react-tinder-card'
+import React, { useState, useEffect } from 'react';
+import { ImageBackground, Text, View, StyleSheet, ActivityIndicator } from 'react-native';
+import TinderCard from 'react-tinder-card';
+import axios from 'axios';
 
 const styles = {
   container: {
@@ -29,7 +30,6 @@ const styles = {
     shadowOpacity: 0.2,
     shadowRadius: 20,
     borderRadius: 20,
-    resizeMode: 'cover',
   },
   cardImage: {
     width: '100%',
@@ -49,61 +49,83 @@ const styles = {
     display: 'flex',
     zIndex: -100,
   }
-}
+};
 
-const db = [
-  {
-    name: 'Richard Hendricks',
-    img: require('../assets/img/placeholder.jpeg')
-  },
-  {
-    name: 'Erlich Bachman',
-    img: require('../assets/img/placeholder.jpeg')
-  },
-  {
-    name: 'Monica Hall',
-    img: require('../assets/img/placeholder.jpeg')
-  },
-  {
-    name: 'Jared Dunn',
-    img: require('../assets/img/placeholder.jpeg')
-  },
-  {
-    name: 'Dinesh Chugtai',
-    img: require('../assets/img/placeholder.jpeg')
-  }
-]
+function SwiperComponent() {
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [lastDirection, setLastDirection] = useState();
 
-function Simple() {
-  const characters = db
-  const [lastDirection, setLastDirection] = useState()
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        // Replace with your backend URL. For Android emulator, use 10.0.2.2.
+        const response = await axios.get('http://10.0.2.2:5000/search', {
+          params: { query: 'shirt' }
+        });
+        // Combine products from multiple stores
+        const data = response.data;
+        const combined = [
+          ...data.escuelaJS,
+          ...data.forever21,
+          ...data.walmart,
+        ];
+        setCards(combined);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const swiped = (direction, nameToDelete) => {
-    console.log('removing: ' + nameToDelete)
-    setLastDirection(direction)
-  }
+    console.log('removing: ' + nameToDelete);
+    setLastDirection(direction);
+  };
 
   const outOfFrame = (name) => {
-    console.log(name + ' left the screen!')
+    console.log(name + ' left the screen!');
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>React Native Tinder Card</Text>
       <View style={styles.cardContainer}>
-        {characters.map((character) =>
-          <TinderCard key={character.name} onSwipe={(dir) => swiped(dir, character.name)} onCardLeftScreen={() => outOfFrame(character.name)}>
+        {cards.map((card) => (
+          <TinderCard
+            key={card.product_url}
+            onSwipe={(dir) => swiped(dir, card.title)}
+            onCardLeftScreen={() => outOfFrame(card.title)}
+          >
             <View style={styles.card}>
-              <ImageBackground style={styles.cardImage} source={character.img}>
-                <Text style={styles.cardTitle}>{character.name}</Text>
+              <ImageBackground
+                style={styles.cardImage}
+                source={{ uri: card.image_url }}
+              >
+                <Text style={styles.cardTitle}>{card.title}</Text>
               </ImageBackground>
             </View>
           </TinderCard>
-        )}
+        ))}
       </View>
-      {lastDirection ? <Text style={styles.infoText}>You swiped {lastDirection}</Text> : <Text style={styles.infoText} />}
+      {lastDirection ? (
+        <Text style={styles.infoText}>You swiped {lastDirection}</Text>
+      ) : (
+        <Text style={styles.infoText} />
+      )}
     </View>
-  )
+  );
 }
 
-export default Simple
+export default SwiperComponent;

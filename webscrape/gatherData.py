@@ -3,7 +3,7 @@ from firebaseHandler import initialize_firestore, save_product
 from utils import extract_color
 from forever21 import get_forever21_products
 from escuela import get_escuela_products
-from walmart import get_walmart_products
+# from walmart import get_walmart_products
 
 # Firebase Initialization
 db = initialize_firestore(service_key_path="../serviceKey.json")
@@ -14,7 +14,7 @@ detected_color = extract_color(user_query)
 # Retrieve products from each store
 forever21_products = get_forever21_products(user_query, detected_color)
 escuela_products = get_escuela_products(user_query)
-walmart_products = get_walmart_products(user_query)
+# walmart_products = get_walmart_products(user_query)
 
 def display_product(product):
     """
@@ -48,7 +48,9 @@ for prod in escuela_products:
     print("EscuelaJS product saved with document ID:", doc_ref.id)
 
 # Display and save Walmart products
+'''
 for prod in walmart_products:
     display_product(prod)
     doc_ref = save_product(db, prod)
     print("Walmart product saved with document ID:", doc_ref.id)
+'''
