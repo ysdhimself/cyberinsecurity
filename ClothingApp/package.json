@@ -1,5 +1,5 @@
 {
-  "name": "clothing_app",
+  "name": "clothingapp",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
