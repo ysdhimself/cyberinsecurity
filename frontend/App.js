@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, ActivityIndicator, Keyboard, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import React from "react";
-import { View, StyleSheet } from "react-native";
 import Swiper from "./src/swiper.js"; // Make sure Swiper is exported as a default or named component
 
 export default function App() {
