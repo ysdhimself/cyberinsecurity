@@ -74,7 +74,6 @@ function SwiperComponent({ query }) {
         const data = response.data;
         // Combine products from multiple stores
         const combined = [
-          ...data.escuelaJS,
           ...data.forever21,
           ...data.walmart,
         ];
