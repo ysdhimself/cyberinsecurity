@@ -41,11 +41,11 @@ for prod in forever21_products:
     doc_ref = save_product(db, prod)
     print("Forever21 product saved with document ID:", doc_ref.id)
 
-# Display and save EscuelaJS products
-for prod in escuela_products:
-    display_product(prod)
-    doc_ref = save_product(db, prod)
-    print("EscuelaJS product saved with document ID:", doc_ref.id)
+# # Display and save EscuelaJS products
+# for prod in escuela_products:
+#     display_product(prod)
+#     doc_ref = save_product(db, prod)
+#     print("EscuelaJS product saved with document ID:", doc_ref.id)
 
 # Display and save Walmart products
 
