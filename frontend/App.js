@@ -2,23 +2,42 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, ActivityIndicator, Keyboard, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import Swiper from "./src/swiper.js"; // Make sure Swiper is exported as a default or named component
+import SwiperComponent from "./src/swiper.js";
 
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
+  const [showSwiper, setShowSwiper] = useState(false);
+  const [productData, setProductData] = useState(null);  // NEW: Store the fetched data
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true);
     Keyboard.dismiss();
-    setTimeout(() => setLoading(false), 2000); // Simulate loading
+
+    try {
+      // IMPORTANT: Replace 'http://YOUR_MACHINE_IP:5000' with your actual Flask server address
+      // For Android emulator, you can use: http://10.0.2.2:5000
+      // For iOS simulator, http://localhost:5000 should work
+      const response = await fetch(`http://10.0.2.2:5000/search?query=${encodeURIComponent(prompt)}`);
+      const data = await response.json();
+      
+      // Store the fetched data in state
+      setProductData(data);
+
+      // If there's valid input, show the swiper (or whatever UI you want)
+      setShowSwiper(prompt.trim() !== '');
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>CleanHaul</Text>
+      
+      {/* Search Input */}
       <View style={styles.searchContainer}>
         <TextInput 
           style={styles.input} 
@@ -33,27 +52,38 @@ export default function App() {
           <Ionicons name="options-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
+
       {loading && <ActivityIndicator size="large" color="#000" style={styles.loader} />}
-      <View style={styles.gridContainer}>
-        <View style={[styles.placeholderItem, styles.bigItem]} />
-        <View style={styles.columnContainer}>
-          <View style={styles.placeholderItem} />
-          <View style={styles.placeholderItem} />
+
+      {/* Conditionally Render UI */}
+      {!showSwiper ? (
+        // Show Grid UI when Swiper is NOT active
+        <View style={styles.gridContainer}>
+          <View style={[styles.placeholderItem, styles.bigItem]} />
+          <View style={styles.columnContainer}>
+            <View style={styles.placeholderItem} />
+            <View style={styles.placeholderItem} />
+          </View>
+          {[...Array(3)].map((_, index) => (
+            <View key={index} style={styles.placeholderItem} />
+          ))}
         </View>
-        {[...Array(3)].map((_, index) => (
-          <View key={index} style={styles.placeholderItem} />
-        ))}
-      </View>
+      ) : (
+        // Show Swiper when input is submitted
+        <SwiperComponent query={prompt} />)}
+
+      {/* Navigation Bar */}
       <View style={styles.navbar}>
         <TouchableOpacity><Ionicons name="home-outline" size={24} color="black" /></TouchableOpacity>
         <TouchableOpacity><Ionicons name="bookmark-outline" size={24} color="black" /></TouchableOpacity>
         <TouchableOpacity><Ionicons name="person-outline" size={24} color="black" /></TouchableOpacity>
       </View>
+      
       <StatusBar style="auto" />
-      <Swiper />
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -82,7 +112,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingVertical: 8,
-    textAlignVertical: 'center', // Ensures cursor stays in the middle
+    textAlignVertical: 'center',
   },
   filterIcon: {
     marginLeft: 10,
@@ -109,8 +139,8 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   bigItem: {
-    width: 210, // Considered as two rows
-    height: 250, // Adjusted to fit two rows
+    width: 210,
+    height: 250,
   },
   navbar: {
     flexDirection: 'row',
@@ -124,4 +154,3 @@ const styles = StyleSheet.create({
     borderColor: '#DDD',
   },
 });
-
