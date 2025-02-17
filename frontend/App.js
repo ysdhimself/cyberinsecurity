@@ -1,30 +1,39 @@
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, ActivityIndicator, Keyboard, TouchableOpacity } from 'react-native';
+import { 
+  StatusBar,
+  StyleSheet, 
+  Text, 
+  View, 
+  TextInput, 
+  ActivityIndicator, 
+  Keyboard, 
+  TouchableOpacity,
+  Image // <-- import Image
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SwiperComponent from "./src/swiper.js";
+
+// 1) Define your image array
+const F21_IMAGES = [
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/01372754-01.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/00504635-04.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/01361350-02.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dwb0c0a0c5/1_front_750/01312250-01.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dwb0c0a0c5/1_front_750/01287519-01.jpg?sh=330"
+];
 
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [showSwiper, setShowSwiper] = useState(false);
-  const [productData, setProductData] = useState(null);  // NEW: Store the fetched data
 
   const handleSubmit = async () => {
     setLoading(true);
     Keyboard.dismiss();
 
     try {
-      // IMPORTANT: Replace 'http://YOUR_MACHINE_IP:5000' with your actual Flask server address
-      // For Android emulator, you can use: http://10.0.2.2:5000
-      // For iOS simulator, http://localhost:5000 should work
       const response = await fetch(`http://10.0.2.2:5000/search?query=${encodeURIComponent(prompt)}`);
       const data = await response.json();
-      
-      // Store the fetched data in state
-      setProductData(data);
-
-      // If there's valid input, show the swiper (or whatever UI you want)
       setShowSwiper(prompt.trim() !== '');
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -55,22 +64,40 @@ export default function App() {
 
       {loading && <ActivityIndicator size="large" color="#000" style={styles.loader} />}
 
-      {/* Conditionally Render UI */}
       {!showSwiper ? (
-        // Show Grid UI when Swiper is NOT active
+        // 2) Show a grid of images
         <View style={styles.gridContainer}>
-          <View style={[styles.placeholderItem, styles.bigItem]} />
+          {/* 1st image (Big item) */}
+          <Image
+            source={{ uri: F21_IMAGES[0] }}
+            style={[styles.placeholderItem, styles.bigItem]}
+          />
+          {/* 2nd & 3rd images in a column */}
           <View style={styles.columnContainer}>
-            <View style={styles.placeholderItem} />
-            <View style={styles.placeholderItem} />
+            <Image
+              source={{ uri: F21_IMAGES[1] }}
+              style={styles.placeholderItem}
+            />
+            <Image
+              source={{ uri: F21_IMAGES[2] }}
+              style={styles.placeholderItem}
+            />
           </View>
-          {[...Array(3)].map((_, index) => (
-            <View key={index} style={styles.placeholderItem} />
-          ))}
+          {/* 4th image */}
+          <Image
+            source={{ uri: F21_IMAGES[3] }}
+            style={styles.placeholderItem}
+          />
+          {/* 5th image */}
+          <Image
+            source={{ uri: F21_IMAGES[4] }}
+            style={styles.placeholderItem}
+          />
         </View>
       ) : (
-        // Show Swiper when input is submitted
-        <SwiperComponent query={prompt} />)}
+        // Show Swiper if there's a valid prompt
+        <SwiperComponent query={prompt} />
+      )}
 
       {/* Navigation Bar */}
       <View style={styles.navbar}>
@@ -84,7 +111,7 @@ export default function App() {
   );
 }
 
-
+// Styles remain the same...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -137,6 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDD',
     borderRadius: 10,
     margin: 5,
+    // remove background color if you want only the image
   },
   bigItem: {
     width: 210,
