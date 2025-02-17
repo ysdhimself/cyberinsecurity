@@ -1,36 +1,54 @@
+// App.js
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, ActivityIndicator, Keyboard, TouchableOpacity } from 'react-native';
+import { 
+  StatusBar,
+  StyleSheet, 
+  Text, 
+  View, 
+  TextInput, 
+  ActivityIndicator, 
+  Keyboard, 
+  TouchableOpacity,
+  Image
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SwiperComponent from "./src/swiper.js";
+import Cart from './src/Cart.js';
+
+// Hardcoding images to menu screen
+const F21_IMAGES = [
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/01372754-01.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/00504635-04.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/01361350-02.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dwb0c0a0c5/1_front_750/01312250-01.jpg?sh=330",
+  "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dwb0c0a0c5/1_front_750/01287519-01.jpg?sh=330"
+];
 
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [showSwiper, setShowSwiper] = useState(false);
-  const [productData, setProductData] = useState(null);  // NEW: Store the fetched data
+  const [cart, setCart] = useState([]); // Cart state to track liked items
+  const [cartVisible, setCartVisible] = useState(false); // Controls cart modal visibility
 
   const handleSubmit = async () => {
     setLoading(true);
     Keyboard.dismiss();
 
     try {
-      // IMPORTANT: Replace 'http://YOUR_MACHINE_IP:5000' with your actual Flask server address
-      // For Android emulator, you can use: http://10.0.2.2:5000
-      // For iOS simulator, http://localhost:5000 should work
       const response = await fetch(`http://10.0.2.2:5000/search?query=${encodeURIComponent(prompt)}`);
       const data = await response.json();
-      
-      // Store the fetched data in state
-      setProductData(data);
-
-      // If there's valid input, show the swiper (or whatever UI you want)
       setShowSwiper(prompt.trim() !== '');
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to add an item to the cart when swiped right
+  const addToCart = (item) => {
+    setCart(prevCart => [...prevCart, item]);
   };
 
   return (
@@ -55,35 +73,50 @@ export default function App() {
 
       {loading && <ActivityIndicator size="large" color="#000" style={styles.loader} />}
 
-      {/* Conditionally Render UI */}
       {!showSwiper ? (
-        // Show Grid UI when Swiper is NOT active
+        // Grid of placeholder images when no prompt is entered
         <View style={styles.gridContainer}>
-          <View style={[styles.placeholderItem, styles.bigItem]} />
+          <Image source={{ uri: F21_IMAGES[0] }} style={[styles.placeholderItem, styles.bigItem]} />
           <View style={styles.columnContainer}>
-            <View style={styles.placeholderItem} />
-            <View style={styles.placeholderItem} />
+            <Image source={{ uri: F21_IMAGES[1] }} style={styles.placeholderItem} />
+            <Image source={{ uri: F21_IMAGES[2] }} style={styles.placeholderItem} />
           </View>
-          {[...Array(3)].map((_, index) => (
-            <View key={index} style={styles.placeholderItem} />
-          ))}
+          <Image source={{ uri: F21_IMAGES[3] }} style={styles.placeholderItem} />
+          <Image source={{ uri: F21_IMAGES[4] }} style={styles.placeholderItem} />
         </View>
       ) : (
-        // Show Swiper when input is submitted
-        <SwiperComponent query={prompt} />)}
+        // Pass the addToCart function to the SwiperComponent
+        <SwiperComponent query={prompt} addToCart={addToCart} />
+      )}
 
-      {/* Navigation Bar */}
+      {/* Navigation Bar with Cart Icon */}
       <View style={styles.navbar}>
-        <TouchableOpacity><Ionicons name="home-outline" size={24} color="black" /></TouchableOpacity>
-        <TouchableOpacity><Ionicons name="bookmark-outline" size={24} color="black" /></TouchableOpacity>
-        <TouchableOpacity><Ionicons name="person-outline" size={24} color="black" /></TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          setPrompt('');
+          setShowSwiper(false);
+        }}>
+          <Ionicons name="home-outline" size={24} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.cartIcon} onPress={() => setCartVisible(true)}>
+          <Ionicons name="bookmark-outline" size={24} color="black" />
+          {cart.length > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>{cart.length}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Ionicons name="person-outline" size={24} color="black" />
+        </TouchableOpacity>
       </View>
       
+      {/* Render the Cart modal */}
+      <Cart visible={cartVisible} cartItems={cart} onClose={() => setCartVisible(false)} />
+
       <StatusBar style="auto" />
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -152,5 +185,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderTopWidth: 1,
     borderColor: '#DDD',
+  },
+  cartIcon: {
+    position: 'relative',
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -10,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    paddingHorizontal: 5,
+  },
+  cartBadgeText: {
+    color: '#FFF',
+    fontSize: 12,
   },
 });
