@@ -1,3 +1,4 @@
+# CyberInsecurity
 ## Overview
 CleanHaul is an app designed to scrape the web for clothing descriptions, present them in a swipe-based UI for user interaction, and learn user preferences over time. The project consists of a frontend built with React and a backend server for web scraping and data management.
 
@@ -83,4 +84,3 @@ This project is open-source under the MIT License.
 | Riya Salian      | salian97     |
 | Prateek Annam    | Praticus87   |
 -----------------------------------
-# CyberInsecurity
