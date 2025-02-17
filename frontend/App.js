@@ -13,7 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import SwiperComponent from "./src/swiper.js";
 
-// 1) Define your image array
+// Hardcoding images to menu screen
 const F21_IMAGES = [
   "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/01372754-01.jpg?sh=330",
   "https://www.forever21.com/dw/image/v2/BFKH_PRD/on/demandware.static/-/Sites-f21-master-catalog/default/dw1a82750c/1_front_750/00504635-04.jpg?sh=330",
