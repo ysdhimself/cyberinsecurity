@@ -3,7 +3,6 @@ import { ImageBackground, Text, View, StyleSheet, ActivityIndicator } from 'reac
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
 
-// Reuse your style object or convert it into a StyleSheet if you prefer.
 const styles = {
   container: {
     display: 'flex',
@@ -52,19 +51,12 @@ const styles = {
   }
 };
 
-function SwiperComponent({ query }) {
+function SwiperComponent({ query, addToCart }) {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastDirection, setLastDirection] = useState(null);
 
   useEffect(() => {
-    // If there's no query, decide whether to skip fetching or clear cards
-    // if (!query) {
-    //   setCards([]);
-    //   setLoading(false);
-    //   return;
-    // }
-
     const fetchProducts = async () => {
       setLoading(true);
       try {
@@ -87,11 +79,16 @@ function SwiperComponent({ query }) {
     };
 
     fetchProducts();
-  }, [query]); // <-- re-run whenever query changes
+  }, [query]);
 
-  const swiped = (direction, nameToDelete) => {
-    console.log('removing:', nameToDelete);
+  // Called whenever a card is swiped
+  const swiped = (direction, card) => {
+    console.log('removing:', card.title);
     setLastDirection(direction);
+    if (direction === "right") {
+      // If swiped right, add the card to the cart
+      addToCart(card);
+    }
   };
 
   const outOfFrame = (name) => {
@@ -113,7 +110,7 @@ function SwiperComponent({ query }) {
         {cards.map((card) => (
           <TinderCard
             key={card.product_url}
-            onSwipe={(dir) => swiped(dir, card.title)}
+            onSwipe={(dir) => swiped(dir, card)}
             onCardLeftScreen={() => outOfFrame(card.title)}
           >
             <View style={styles.card}>
