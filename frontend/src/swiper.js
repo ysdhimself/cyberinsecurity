@@ -2,54 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ImageBackground, Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
-
-const styles = {
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  header: {
-    color: '#000',
-    fontSize: 30,
-    marginBottom: 30,
-  },
-  cardContainer: {
-    width: '90%',
-    maxWidth: 260,
-    height: 300,
-  },
-  card: {
-    position: 'absolute',
-    backgroundColor: '#fff',
-    width: '100%',
-    maxWidth: 260,
-    height: 300,
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    borderRadius: 20,
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    borderRadius: 20,
-  },
-  cardTitle: {
-    position: 'absolute',
-    bottom: 0,
-    margin: 10,
-    color: '#fff',
-  },
-  infoText: {
-    height: 28,
-    justifyContent: 'center',
-    display: 'flex',
-    zIndex: -100,
-  }
-};
+import { LinearGradient } from 'expo-linear-gradient';
 
 function SwiperComponent({ query, addToCart }) {
   const [cards, setCards] = useState([]);
@@ -85,8 +38,8 @@ function SwiperComponent({ query, addToCart }) {
   const swiped = (direction, card) => {
     console.log('removing:', card.title);
     setLastDirection(direction);
-    if (direction === "right") {
-      // If swiped right, add the card to the cart
+    if (direction === "right" && addToCart) {
+      // Add card to cart if swiped right
       addToCart(card);
     }
   };
@@ -105,7 +58,7 @@ function SwiperComponent({ query, addToCart }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>React Native Tinder Card</Text>
+      <Text style={styles.header}>Swipe Left/Right</Text>
       <View style={styles.cardContainer}>
         {cards.map((card) => (
           <TinderCard
@@ -118,7 +71,21 @@ function SwiperComponent({ query, addToCart }) {
                 style={styles.cardImage}
                 source={{ uri: card.image_url }}
               >
-                <Text style={styles.cardTitle}>{card.title}</Text>
+                <LinearGradient
+                  colors={[
+                    'transparent',
+                    'rgba(0,0,0,0.1)',
+                    'rgba(0,0,0,0.3)',
+                    'rgba(0,0,0,0.7)'
+                  ]}
+                  start={{ x: 0.5, y: 0 }}
+                  end={{ x: 0.5, y: 1 }}
+                  style={styles.gradientOverlay}
+                >
+                  <Text style={styles.cardTitle}>{card.title}</Text>
+                  <Text style={styles.cardStore}>Store: {card.store}</Text>
+                  <Text style={styles.cardPrice}>Price: ${card.price}</Text>
+                </LinearGradient>
               </ImageBackground>
             </View>
           </TinderCard>
@@ -132,5 +99,71 @@ function SwiperComponent({ query, addToCart }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  header: {
+    color: '#000',
+    fontSize: 30,
+    marginBottom: 30,
+  },
+  cardContainer: {
+    width: '90%',
+    maxWidth: 260,
+    height: 300,
+  },
+  card: {
+    position: 'absolute',
+    backgroundColor: '#fff',
+    width: '100%',
+    maxWidth: 260,
+    height: 300,
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    borderRadius: 20,
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    borderRadius: 20,
+  },
+  gradientOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '40%',
+    borderRadius: 20,
+    padding: 10,
+    justifyContent: 'flex-end',
+  },
+  cardTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cardStore: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  cardPrice: {
+    color: '#fff',
+    fontSize: 14,
+    marginTop: 4,
+  },
+  infoText: {
+    height: 28,
+    justifyContent: 'center',
+    display: 'flex',
+    zIndex: -100,
+  },
+});
 
 export default SwiperComponent;
