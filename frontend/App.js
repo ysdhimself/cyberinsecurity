@@ -2,21 +2,35 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, ActivityIndicator, Keyboard, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Swiper from "./src/swiper.js"; // Ensure Swiper is correctly imported
+import Swiper from "./src/swiper.js";
 
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
-  const [showSwiper, setShowSwiper] = useState(false); // Controls whether Swiper appears
+  const [showSwiper, setShowSwiper] = useState(false);
+  const [productData, setProductData] = useState(null);  // NEW: Store the fetched data
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true);
     Keyboard.dismiss();
 
-    setTimeout(() => {
+    try {
+      // IMPORTANT: Replace 'http://YOUR_MACHINE_IP:5000' with your actual Flask server address
+      // For Android emulator, you can use: http://10.0.2.2:5000
+      // For iOS simulator, http://localhost:5000 should work
+      const response = await fetch(`http://10.0.2.2:5000/search?query=${encodeURIComponent(prompt)}`);
+      const data = await response.json();
+      
+      // Store the fetched data in state
+      setProductData(data);
+
+      // If there's valid input, show the swiper (or whatever UI you want)
+      setShowSwiper(prompt.trim() !== '');
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
       setLoading(false);
-      setShowSwiper(prompt.trim() !== ''); // Show Swiper only if input is not empty
-    }, 1000); // Simulated loading time
+    }
   };
 
   return (
@@ -31,7 +45,7 @@ export default function App() {
           placeholderTextColor="#999"
           value={prompt}
           onChangeText={setPrompt}
-          onSubmitEditing={handleSubmit} // Triggers the transition
+          onSubmitEditing={handleSubmit}
           returnKeyType="done"
         />
         <TouchableOpacity style={styles.filterIcon}>
@@ -56,8 +70,7 @@ export default function App() {
         </View>
       ) : (
         // Show Swiper when input is submitted
-        <Swiper />
-      )}
+        <Swiper data={productData} />)}
 
       {/* Navigation Bar */}
       <View style={styles.navbar}>
@@ -70,6 +83,7 @@ export default function App() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
