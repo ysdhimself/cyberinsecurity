@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, ActivityIndicator, Keyboard, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Swiper from "./src/swiper.js";
+import SwiperComponent from "./src/swiper.js";
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -70,7 +70,7 @@ export default function App() {
         </View>
       ) : (
         // Show Swiper when input is submitted
-        <Swiper data={productData} />)}
+        <SwiperComponent query={prompt} />)}
 
       {/* Navigation Bar */}
       <View style={styles.navbar}>

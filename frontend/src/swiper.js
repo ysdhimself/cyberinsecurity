@@ -3,6 +3,7 @@ import { ImageBackground, Text, View, StyleSheet, ActivityIndicator } from 'reac
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
 
+// Reuse your style object or convert it into a StyleSheet if you prefer.
 const styles = {
   container: {
     display: 'flex',
@@ -51,20 +52,27 @@ const styles = {
   }
 };
 
-function SwiperComponent() {
+function SwiperComponent({ query }) {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [lastDirection, setLastDirection] = useState();
+  const [lastDirection, setLastDirection] = useState(null);
 
   useEffect(() => {
+    // If there's no query, decide whether to skip fetching or clear cards
+    // if (!query) {
+    //   setCards([]);
+    //   setLoading(false);
+    //   return;
+    // }
+
     const fetchProducts = async () => {
+      setLoading(true);
       try {
-        // Replace with your backend URL. For Android emulator, use 10.0.2.2.
         const response = await axios.get('http://10.0.2.2:5000/search', {
-          params: { query: 'shirt' }
+          params: { query }
         });
-        // Combine products from multiple stores
         const data = response.data;
+        // Combine products from multiple stores
         const combined = [
           ...data.escuelaJS,
           ...data.forever21,
@@ -79,15 +87,15 @@ function SwiperComponent() {
     };
 
     fetchProducts();
-  }, []);
+  }, [query]); // <-- re-run whenever query changes
 
   const swiped = (direction, nameToDelete) => {
-    console.log('removing: ' + nameToDelete);
+    console.log('removing:', nameToDelete);
     setLastDirection(direction);
   };
 
   const outOfFrame = (name) => {
-    console.log(name + ' left the screen!');
+    console.log(`${name} left the screen!`);
   };
 
   if (loading) {
