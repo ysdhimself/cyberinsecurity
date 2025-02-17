@@ -15,5 +15,6 @@
 local.properties
 webscrape/congif.py
 serviceKey.json
-node_modules
+frontend\node_modules
 .expo
+

@@ -2,7 +2,7 @@ import webbrowser
 from firebaseHandler import initialize_firestore, save_product
 from utils import extract_color
 from forever21 import get_forever21_products
-#from escuela import get_escuela_products
+from escuela import get_escuela_products
 from walmart import get_walmart_products
 
 # Firebase Initialization
@@ -13,7 +13,7 @@ detected_color = extract_color(user_query)
 
 # Retrieve products from each store
 forever21_products = get_forever21_products(user_query, detected_color)
-#escuela_products = get_escuela_products(user_query)
+escuela_products = get_escuela_products(user_query)
 walmart_products = get_walmart_products(user_query)
 
 def display_product(product):
