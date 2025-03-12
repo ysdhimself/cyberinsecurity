@@ -1,4 +1,5 @@
 # CyberInsecurity
+Devpost Link: https://devpost.com/software/cyberinsecurity-cleanhaul
 ## Overview
 CleanHaul is an app designed to scrape the web for clothing descriptions, present them in a swipe-based UI for user interaction, and learn user preferences over time. The project consists of a frontend built with React and a backend server for web scraping and data management.
 
